@@ -1,0 +1,44 @@
+import request from '@/utils/request';
+import { NoticeForm, NoticeQuery, NoticeVO } from './types';
+import { AxiosPromise } from 'axios';
+// 查询公告列表
+export function listNotice(query: NoticeQuery): AxiosPromise<NoticeVO[]> {
+  return request({
+    url: '/system/notice/list',
+    method: 'get',
+    params: query
+  });
+}
+// 新增公告
+export function addNotice(data: NoticeForm) {
+  return request({
+    url: '/system/notice/insert',
+    method: 'post',
+    data: data
+  });
+}
+
+// 修改公告
+export function updateNotice(data: NoticeForm) {
+  return request({
+    url: '/system/notice/update',
+    method: 'post',
+    data: data
+  });
+}
+
+// 删除公告
+export function delNotice(noticeId: string | number | Array<string | number>) {
+  return request({
+    url: '/system/notice/' + noticeId,
+    method: 'post'
+  });
+}
+
+export const handleNotice = (data: { noticeId: string | number; title: string; content: string }) => {
+  return request({
+    url: '/system/notice/handle',
+    method: 'post',
+    data: data
+  });
+};
