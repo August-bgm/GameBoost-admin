@@ -43,16 +43,13 @@
             <el-button v-hasPermi="['system:role:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['system:role:edit']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button v-hasPermi="['system:role:delete']" type="danger" plain :disabled="ids.length === 0" @click="handleDelete()">删除</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
 
-      <el-table ref="roleTableRef" border v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
+      <el-table ref="roleTableRef" border :data="roleList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="角色编号" prop="roleId" width="120" />
         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
@@ -153,7 +150,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { status_enabled } = toRefs<any>(proxy?.useDict('status_enabled'));
 
 const roleList = ref<RoleVO[]>();
-const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const single = ref(true);
@@ -194,7 +190,7 @@ const data = reactive<PageData<RoleForm, RoleQuery>>({
 });
 const { form, queryParams, rules } = toRefs(data);
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
@@ -203,11 +199,9 @@ const dialog = reactive<DialogOption>({
  * 查询角色列表
  */
 const getList = () => {
-  loading.value = true;
   listRole(proxy?.addDateRange(queryParams.value, dateRange.value)).then((res) => {
     roleList.value = res.data.records;
     total.value = res.data.total;
-    loading.value = false;
   });
 };
 

@@ -28,7 +28,7 @@
             <el-button v-hasPermi="['system:menu:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['system:menu:remove']" type="danger" plain icon="Delete" @click="handleCascadeDelete" :loading="deleteLoading">级联删除</el-button>
+            <el-button v-hasPermi="['system:menu:remove']" type="danger" plain icon="Delete" @click="handleCascadeDelete">级联删除</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -36,7 +36,6 @@
 
       <el-table
         ref="menuTableRef"
-        v-loading="loading"
         :data="menuList"
         row-key="menuId"
         border
@@ -261,7 +260,7 @@
       />
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitDeleteForm" :loading="deleteLoading">确 定</el-button>
+          <el-button type="primary" @click="submitDeleteForm">确 定</el-button>
           <el-button @click="cancelCascade">取 消</el-button>
         </div>
       </template>
@@ -286,11 +285,10 @@ const { status_display, status_enabled } = toRefs<any>(proxy?.useDict('status_di
 const menuList = ref<MenuVO[]>([]);
 const menuChildrenListMap = ref({});
 const menuExpandMap = ref({});
-const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
@@ -369,7 +367,6 @@ const refreshAllExpandMenuData = () => {
 
 /** 查询菜单列表 */
 const getList = async () => {
-  loading.value = true;
   const res = await listMenu(queryParams.value);
 
   const tempMap = {};
@@ -393,7 +390,6 @@ const getList = async () => {
   menuList.value = res.data.filter((menu) => !menuIdSet.has(menu.parentId));
   // 根据新数据重新加载子菜单数据
   refreshAllExpandMenuData();
-  loading.value = false;
 };
 /** 查询菜单下拉树结构 */
 const getTreeselect = async () => {
@@ -457,11 +453,9 @@ const handleDelete = async (row: MenuVO) => {
   await getList();
   proxy?.$modal.msgSuccess('删除成功');
 };
-
-const deleteLoading = ref<boolean>(false);
 const menuTreeRef = ref<ElTreeInstance>();
 
-const deleteDialog = reactive<DialogOption>({
+const deleteDialog = reactive({
   visible: false,
   title: '级联删除菜单'
 });
@@ -486,9 +480,7 @@ const submitDeleteForm = async () => {
     proxy?.$modal.msgWarning('请选择要删除的菜单');
     return;
   }
-
-  deleteLoading.value = true;
-  await cascadeDelMenu(menuIds).finally(() => (deleteLoading.value = false));
+  await cascadeDelMenu(menuIds);
   await getList();
   proxy?.$modal.msgSuccess('删除成功');
   deleteDialog.visible = false;

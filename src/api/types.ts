@@ -1,13 +1,19 @@
-/**
- * 注册
- */
 export type RegisterForm = {
   username: string;
   password: string;
   confirmPassword?: string;
   code?: string;
   uuid?: string;
-  userType?: string;
+};
+export type ApplicateForm = {
+  username: string;
+  password: string;
+  confirmPassword?: string;
+  code?: string;
+  uuid?: string;
+  phonenumber?: string;
+  realName?: string;
+  idCard?: string;
 };
 
 /**

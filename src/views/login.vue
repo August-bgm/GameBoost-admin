@@ -2,7 +2,7 @@
   <div class="login-wrapper">
     <div class="login-box">
       <div class="login-left">
-        <img src="../assets/images/Innovation-bro.png" alt="login-bg" />
+        <img src="../assets/images/Innovation-bro.png"/>
       </div>
       <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="welcome-text">{{ proxy.$t('login.welcome') }}</div>
@@ -54,7 +54,7 @@
           </router-link>
         </div>
 
-        <el-button :loading="loading" size="large" type="primary" class="login-btn" @click.prevent="handleLogin">
+        <el-button size="large" type="primary" class="login-btn" @click.prevent="handleLogin">
           {{ proxy.$t('login.login') }}
         </el-button>
         <div class="social-login">
@@ -271,12 +271,11 @@ const loginRules: ElFormRules = {
 };
 
 const codeUrl = ref('');
-const loading = ref(false);
 // 验证码开关
 const captchaEnabled = ref(true);
 
 // 注册开关
-const register = ref(false);
+const register = ref(true);
 const redirect = ref('/');
 const loginRef = ref<ElFormInstance>();
 
@@ -291,7 +290,6 @@ watch(
 const handleLogin = () => {
   loginRef.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
-      loading.value = true;
       // 勾选了需要记住密码设置在 localStorage 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
         localStorage.setItem('username', String(loginForm.value.username));
@@ -308,10 +306,8 @@ const handleLogin = () => {
         await userStore.login(loginForm.value);
         const redirectUrl = redirect.value || '/';
         await router.push(redirectUrl);
-        loading.value = false;
       }
       catch(err){
-        loading.value = false;
         // 重新获取验证码
         if (captchaEnabled.value) {
           await getCode();

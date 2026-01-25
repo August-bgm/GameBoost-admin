@@ -37,6 +37,7 @@ export default {
     confirmPassword: 'Confirm Password',
     register: 'Register',
     registering: 'Registering...',
+    welcome:'注册申请',
     registerSuccess: 'Congratulations, your {username} account has been registered!',
     code: 'Verification Code',
     switchLoginPage: 'Log in with an existing account',
@@ -56,7 +57,21 @@ export default {
       confirmPassword: {
         required: 'Please enter your password again',
         equalToPassword: 'The password entered twice is inconsistent'
-      }
+      },
+        realName: {
+        required: '请输入真实姓名',
+        },
+        phonenumber: {
+        required: '请输入手机号码',
+        pattern: '请输入有效的手机号码'
+        },
+        idCard: {
+        required: '请输入身份证号码',
+        pattern: '请输入有效的身份证号码格式'
+        },
+        isAgree: {
+        required: '请阅读并同意协议'
+        }
     }
   },
   // 导航栏国际化

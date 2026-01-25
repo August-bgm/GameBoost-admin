@@ -55,7 +55,6 @@
 
       <el-table
         ref="operLogTableRef"
-        v-loading="loading"
         :data="operlogList"
         border
         :default-sort="defaultSort"
@@ -101,7 +100,6 @@
 
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
-    <!-- 操作日志详细 -->
     <OperInfoDialog ref="operInfoDialogRef" />
   </div>
 </template>
@@ -115,7 +113,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { oper_type, status_oper } = toRefs<any>(proxy?.useDict('oper_type', 'status_oper'));
 
 const operlogList = ref<OperLogVO[]>([]);
-const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<number | string>>([]);
 const multiple = ref(true);
@@ -159,11 +156,9 @@ const { queryParams } = toRefs(data);
 
 /** 查询登录日志 */
 const getList = async () => {
-  loading.value = true;
   const res = await list(proxy?.addDateRange(queryParams.value, dateRange.value));
   operlogList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
 /** 搜索按钮操作 */
 const handleQuery = () => {

@@ -2,67 +2,128 @@
   <div class="login-wrapper">
     <div class="login-box">
       <div class="login-left">
-        <img src="../assets/images/Innovation-bro.png" alt="register-bg" />
+        <img src="../assets/images/Innovation-bro.png"/>
       </div>
       <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="login-form">
-        <div class="welcome-text">{{ proxy.$t('register.register') }}</div>
-        <el-form-item prop="username">
-          <el-input 
-            v-model="registerForm.username" 
-            size="large" 
-            :placeholder="proxy.$t('register.username')"
-          >
-            <template #prefix><svg-icon icon-class="user" class="input-icon" /></template>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="registerForm.password"
-            type="password"
-            size="large"
-            show-password
-            :placeholder="proxy.$t('register.password')"
-            @keyup.enter="handleRegister"
-          >
-            <template #prefix><svg-icon icon-class="password" class="input-icon" /></template>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="confirmPassword">
-          <el-input
-            v-model="registerForm.confirmPassword"
-            type="password"
-            size="large"
-            show-password
-            :placeholder="proxy.$t('register.confirmPassword')"
-            @keyup.enter="handleRegister"
-          >
-            <template #prefix><svg-icon icon-class="password" class="input-icon" /></template>
-          </el-input>
-        </el-form-item>
-        <el-form-item v-if="captchaEnabled" prop="code">
-          <div class="captcha-box">
-            <el-input
-              v-model="registerForm.code"
-              size="large"
-              :placeholder="proxy.$t('register.code')"
-              class="captcha-input"
-              @keyup.enter="handleRegister"
+        <div class="welcome-text">
+          {{ proxy.$t('register.welcome') }}
+        </div>
+
+        <!-- 第一步：账号基础信息 -->
+        <div v-show="step === 1">
+          <el-form-item prop="username">
+            <el-input 
+              v-model="registerForm.username" 
+              size="large" 
+              :placeholder="proxy.$t('register.username')"
             >
-              <template #prefix><svg-icon icon-class="validCode" class="input-icon" /></template>
+              <template #prefix><svg-icon icon-class="user" class="input-icon" /></template>
             </el-input>
-            <div class="login-code" @click="getCode">
-              <img :src="codeUrl" class="login-code-img" />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="registerForm.password"
+              type="password"
+              size="large"
+              show-password
+              :placeholder="proxy.$t('register.password')"
+            >
+              <template #prefix><svg-icon icon-class="password" class="input-icon" /></template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="confirmPassword">
+            <el-input
+              v-model="registerForm.confirmPassword"
+              type="password"
+              size="large"
+              show-password
+              :placeholder="proxy.$t('register.confirmPassword')"
+              @keyup.enter="handleNextStep"
+            >
+              <template #prefix><svg-icon icon-class="password" class="input-icon" /></template>
+            </el-input>
+          </el-form-item>
+        </div>
+
+        <!-- 第二步：新增实名信息 + 验证码 -->
+        <div v-show="step === 2">
+          <!-- 新增：姓名 -->
+          <el-form-item prop="realName">
+            <el-input v-model="registerForm.realName" size="large" placeholder="请输入真实姓名">
+              <template #prefix><el-icon class="input-icon"><User /></el-icon></template>
+            </el-input>
+          </el-form-item>
+          
+          <!-- 新增：手机号 -->
+          <el-form-item prop="phonenumber">
+            <el-input v-model="registerForm.phonenumber" size="large" placeholder="请输入手机号码">
+              <template #prefix><el-icon class="input-icon"><Iphone /></el-icon></template>
+            </el-input>
+          </el-form-item>
+
+          <!-- 新增：身份证号 -->
+          <el-form-item prop="idCard">
+            <el-input v-model="registerForm.idCard" size="large" placeholder="请输入身份证号">
+              <template #prefix><el-icon class="input-icon"><Postcard /></el-icon></template>
+            </el-input>
+          </el-form-item>
+
+          <!-- 验证码 (移动到此处) -->
+          <el-form-item v-if="captchaEnabled" prop="code">
+            <div class="captcha-box">
+              <el-input
+                v-model="registerForm.code"
+                size="large"
+                :placeholder="proxy.$t('register.code')"
+                class="captcha-input"
+                @keyup.enter="handleRegister"
+              >
+                <template #prefix><svg-icon icon-class="validCode" class="input-icon" /></template>
+              </el-input>
+              <div class="login-code" @click="getCode">
+                <img :src="codeUrl" class="login-code-img" />
+              </div>
             </div>
-          </div>
-        </el-form-item>
-        <div class="remember-box" style="justify-content: flex-end;">
+          </el-form-item>
+
+          <!-- 新增：协议勾选 -->
+          <el-form-item prop="isAgree" style="margin-bottom: 10px;">
+            <el-checkbox v-model="agree">
+              我已阅读并同意
+              <span class="link-type" @click.stop="showAgreement">《代练合伙人协议》</span>
+            </el-checkbox>
+          </el-form-item>
+        </div>
+
+        <!-- 底部操作区 -->
+        <div class="remember-box" style="justify-content: flex-end; margin-bottom: 15px;" v-show="step === 1">
           <router-link class="link-type" :to="'/login'">
             {{ proxy.$t('register.switchLoginPage') }}
           </router-link>
         </div>
-        <el-button :loading="loading" size="large" type="primary" class="login-btn" @click.prevent="handleRegister">
+
+        <!-- 按钮组 -->
+        <div v-if="step === 1">
+          <el-button size="large" type="primary" class="login-btn" @click="handleNextStep">
+            下一步
+          </el-button>
+        </div>
+        
+        <div v-else style="display: flex; gap: 10px;">
+          <el-button size="large" type="primary" class="login-btn" style="width: 30%" @click="step = 1">
+            上一步
+          </el-button>
+          <el-button 
+            size="large" 
+            type="primary" 
+            class="login-btn" 
+            style="width: 70%" 
+            @click.prevent="handleRegister"
+          >
             {{ proxy.$t('register.register') }}
-        </el-button>
+          </el-button>
+        </div>
+
       </el-form>
     </div>
   </div>
@@ -237,8 +298,8 @@
 }
 </style>
 <script setup lang="ts">
-import { getCodeImg, register } from '@/api/login';
-import { RegisterForm } from '@/api/types';
+import { getCodeImg, applicate} from '@/api/login';
+import { ApplicateForm } from '@/api/types';
 import { HttpStatus } from '@/enums/RespEnum';
 import { useI18n } from 'vue-i18n';
 
@@ -246,14 +307,17 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
 
 const { t } = useI18n();
-
-const registerForm = ref<RegisterForm>({
+const agree=ref(false);
+const step=ref(1);
+const registerForm = ref<ApplicateForm>({
   username: '',
   password: '',
   confirmPassword: '',
   code: '',
   uuid: '',
-  userType: 'sys_user'
+  phonenumber:'',
+  idCard:'',
+  realName:''
 });
 
 const equalToPassword = (rule: any, value: string, callback: any) => {
@@ -263,44 +327,73 @@ const equalToPassword = (rule: any, value: string, callback: any) => {
     callback();
   }
 };
+// const validateAgree = (rule: any, value: any, callback: any) => {
+//   // 如果值为 true，校验通过
+//   if (value === true) {
+//     callback();
+//   } else {
+//     // 否则报错
+//     callback(new Error(t('register.rule.isAgree.required'))); 
+//   }
+// };
 
 const registerRules: ElFormRules = {
-  username: [
-    { required: true, trigger: 'blur', message: t('register.rule.username.required') },
-    { min: 2, max: 20, message: t('register.rule.username.length', { min: 2, max: 20 }), trigger: 'blur' }
-  ],
-  password: [
-    { required: true, trigger: 'blur', message: t('register.rule.password.required') },
-    { min: 5, max: 20, message: t('register.rule.password.length', { min: 5, max: 20 }), trigger: 'blur' },
-    { pattern: /^[^<>"'|\\]+$/, message: t('register.rule.password.pattern', { strings: '< > " \' \\ |' }), trigger: 'blur' }
-  ],
-  confirmPassword: [
-    { required: true, trigger: 'blur', message: t('register.rule.confirmPassword.required') },
-    { required: true, validator: equalToPassword, trigger: 'blur' }
-  ],
-  code: [{ required: true, trigger: 'change', message: t('register.rule.code.required') }]
+    username: [
+        { required: true, trigger: 'blur', message: t('register.rule.username.required') },
+        { min: 1, max: 30, message: t('register.rule.username.length', { min: 1, max: 30 }), trigger: 'blur' }
+    ],
+    password: [
+        { required: true, trigger: 'blur', message: t('register.rule.password.required') },
+        { min: 5, max: 30, message: t('register.rule.password.length', { min: 5, max: 30 }), trigger: 'blur' },
+        { pattern: /^[^<>"'|\\]+$/, message: t('register.rule.password.pattern', { strings: '< > " \' \\ |' }), trigger: 'blur' }
+    ],
+    confirmPassword: [
+        { required: true, trigger: 'blur', message: t('register.rule.confirmPassword.required') },
+        { required: true, validator: equalToPassword, trigger: 'blur' }
+    ],
+    code: [{ required: true, trigger: 'change', message: t('register.rule.code.required') }],
+    realName: [
+        { required: true, trigger: 'blur', message: t('register.rule.realName.required') },
+    ],
+    phonenumber: [
+        { required: true, trigger: 'blur', message: t('register.rule.phonenumber.required') },
+        { 
+        pattern: /^\d{7,}$/, 
+        message: t('register.rule.phonenumber.pattern'),
+        trigger: 'blur' 
+        }
+    ],
+    idCard: [
+        { required: true, trigger: 'blur', message: t('register.rule.idCard.required') },
+        { 
+        // 这是一个比较严格的18位身份证校验正则，包含日期有效性校验，最后一位允许X/x
+        pattern: /^[1-9]\d{5}(?:18|19|20)\d{2}(?:0[1-9]|10|11|12)(?:0[1-9]|[1-2]\d|30|31)\d{3}[\dXx]$/,
+        message: t('register.rule.idCard.pattern'),
+        trigger: 'blur' 
+        }
+    ],
+    //有样式Bug：触发校验失败后，即使勾选使得isAgree为true，红色提示文字也不会消失
+    // isAgree: [
+    //     { 
+    //     validator: validateAgree, 
+    //     trigger: 'change' 
+    //     }
+    // ]
 };
 const codeUrl = ref('');
-const loading = ref(false);
 const captchaEnabled = ref(true);
 const registerRef = ref<ElFormInstance>();
 
 const handleRegister = () => {
+  if (!agree.value) return proxy.$modal.msgWarning("请阅读并勾选协议");
   registerRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      loading.value = true;
       try{
-        await register(registerForm.value);
-        const username = registerForm.value.username;
-        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', '系统提示', {
-          app: undefined,
-          dangerouslyUseHTMLString: true,
-          type: 'success'
-        });
+        await applicate(registerForm.value);
+        proxy?.$modal.alertSuccess('申请成功');
         await router.push('/login');
       }
       catch(err){
-        loading.value = false;
         if (captchaEnabled.value) {
           getCode();
         }
@@ -308,6 +401,15 @@ const handleRegister = () => {
     }
   });
 };
+const handleNextStep=()=>{
+    registerRef.value?.validateField(['username', 'password', 'confirmPassword'],async (valid: boolean) => {
+        if (valid) {
+            step.value = 2;
+        }
+    });
+
+}
+const showAgreement=()=>{}
 const getCode = async () => {
   const res = await getCodeImg();
   const { code,data } = res;

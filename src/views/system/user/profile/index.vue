@@ -41,17 +41,17 @@
             </div>
           </template>
           <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本资料" name="userinfo">
+            <!-- <el-tab-pane label="基本资料" name="userinfo">
               <userInfo :user="userForm" />
+            </el-tab-pane> -->
+            <el-tab-pane label="在线设备" name="onlineDevice">
+              <onlineDevice :devices="state.devices" />
             </el-tab-pane>
             <el-tab-pane label="修改密码" name="resetPwd">
               <resetPwd />
             </el-tab-pane>
             <el-tab-pane label="第三方应用" name="thirdParty">
               <thirdParty :auths="state.auths" />
-            </el-tab-pane>
-            <el-tab-pane label="在线设备" name="onlineDevice">
-              <onlineDevice :devices="state.devices" />
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -62,7 +62,7 @@
 
 <script setup name="Profile" lang="ts">
 import UserAvatar from './userAvatar.vue';
-import UserInfo from './userInfo.vue';
+//import UserInfo from './userInfo.vue';
 import ResetPwd from './resetPwd.vue';
 import ThirdParty from './thirdParty.vue';
 import OnlineDevice from './onlineDevice.vue';
@@ -71,7 +71,7 @@ import { getUserProfile } from '@/api/system/user';
 import { getOnline } from '@/api/monitor/online';
 import { UserVO } from '@/api/system/user/types';
 
-const activeTab = ref('userinfo');
+const activeTab = ref('onlineDevice');
 interface State {
   user: Partial<UserVO>;
   auths: any;

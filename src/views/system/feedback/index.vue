@@ -25,7 +25,7 @@
           <right-toolbar v-model:show-search="showSearch" @query-table="getList" />
         </el-row>
       </template>
-      <el-table v-loading="loading" border :data="mainNoticeList">
+      <el-table border :data="mainNoticeList">
         <el-table-column v-if="false" label="序号" align="center" prop="noticeId" width="100" />
         <el-table-column label="标题" align="center" prop="title" :show-overflow-tooltip="true" />
         <el-table-column label="状态" align="center" prop="status" width="100">
@@ -121,19 +121,18 @@ import type { NoticeQuery, NoticeVO } from '@/api/system/notice/types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { status_handle } = toRefs<any>(proxy?.useDict('status_handle'));
 const noticeList = ref<NoticeVO[]>([]);
-const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
 const handleFormRef = ref<ElFormInstance>();
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
 
-const detailDialog = reactive<DialogOption>({
+const detailDialog = reactive({
   visible: false,
   title: ''
 });
@@ -179,11 +178,9 @@ const { queryParams, form, rules } = toRefs(data);
 
 /** 查询列表 */
 const getList = async () => {
-  loading.value = true;
   const res = await listNotice(queryParams.value);
   noticeList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
 
 /** 取消按钮 */

@@ -33,7 +33,7 @@
           <right-toolbar v-model:show-search="showSearch" :search="true" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
-      <el-table v-loading="loading" border :data="userList" @selection-change="handleSelectionChange">
+      <el-table border :data="userList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
         <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />
@@ -76,7 +76,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { status_enabled } = toRefs<any>(proxy?.useDict('status_enabled'));
 
 const userList = ref<UserVO[]>([]);
-const loading = ref(true);
 const showSearch = ref(true);
 const multiple = ref(true);
 const total = ref(0);
@@ -95,11 +94,9 @@ const queryParams = reactive<UserQuery>({
 
 /** 查询授权用户列表 */
 const getList = async () => {
-  loading.value = true;
   const res = await allocatedUserList(queryParams);
   userList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
 // 返回按钮
 const handleClose = () => {

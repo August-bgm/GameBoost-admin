@@ -34,7 +34,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" border :data="noticeList" @selection-change="handleSelectionChange">
+      <el-table border :data="noticeList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="序号" align="center" prop="noticeId" width="100" />
         <el-table-column label="标题" align="center" prop="title" :show-overflow-tooltip="true" />
@@ -103,7 +103,6 @@ import type { NoticeForm, NoticeQuery, NoticeVO } from '@/api/system/notice/type
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { status_enabled } = toRefs<any>(proxy?.useDict('status_enabled'));
 const noticeList = ref<NoticeVO[]>([]);
-const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const single = ref(true);
@@ -113,7 +112,7 @@ const total = ref(0);
 const queryFormRef = ref<ElFormInstance>();
 const noticeFormRef = ref<ElFormInstance>();
 
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
@@ -143,11 +142,9 @@ const data = reactive<PageData<NoticeForm, NoticeQuery>>({
 const { queryParams, form, rules } = toRefs(data);
 
 const getList = async () => {
-  loading.value = true;
   const res = await listNotice(queryParams.value);
   noticeList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
 
 const cancel = () => {

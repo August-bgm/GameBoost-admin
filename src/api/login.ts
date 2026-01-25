@@ -38,6 +38,22 @@ export function register(data: any) {
   });
 }
 
+export function applicate(data: any) {
+  const params = {
+    ...data
+  };
+  return request({
+    url: '/system/user/applicate',
+    headers: {
+      isToken: false,
+      isEncrypt: true,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data: params
+  });
+}
+
 /**
  * 注销
  */

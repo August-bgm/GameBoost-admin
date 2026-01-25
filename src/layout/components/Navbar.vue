@@ -112,7 +112,8 @@ const logout = async () => {
     router.replace({
       path: '/login',
       query: {
-        redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
+        redirect: encodeURIComponent('/')
+        //redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
       }
     });
     proxy?.$tab.closeAllPage();

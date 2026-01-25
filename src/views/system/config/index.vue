@@ -47,18 +47,6 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              v-hasPermi="['system:config:edit']"
-              type="success"
-              plain
-              icon="Edit"
-              :disabled="single"
-              @click="handleUpdate()"
-            >
-              修改
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
               v-hasPermi="['system:config:remove']"
               type="danger"
               plain
@@ -78,7 +66,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" border :data="configList" @selection-change="handleSelectionChange">
+      <el-table border :data="configList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="参数键名" align="center" prop="configKey" show-overflow-tooltip />
         <el-table-column label="参数键值" align="center" prop="configValue" show-overflow-tooltip />
@@ -164,7 +152,6 @@ const INIT_FORM_DATA: ConfigForm = {
 };
 
 // ===================== 响应式状态 =====================
-const loading = ref(true);
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
@@ -180,7 +167,7 @@ const queryFormRef = ref<ElFormInstance>();
 const configFormRef = ref<ElFormInstance>();
 
 // 对话框状态
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
@@ -260,13 +247,11 @@ const form = ref<ConfigForm>({ ...INIT_FORM_DATA });
 // ===================== 数据查询方法 =====================
 /** 查询参数列表 */
 const getList = async () => {
-  loading.value = true;
   try {
     const res = await listConfig(proxy?.addDateRange(queryParams, dateRange.value));
     configList.value = res.data.records;
     total.value = res.data.total;
   } finally {
-    loading.value = false;
   }
 };
 

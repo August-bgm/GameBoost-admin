@@ -37,6 +37,7 @@ export default {
     confirmPassword: '确认密码',
     register: '注 册',
     registering: '注 册 中...',
+    welcome:'注册申请',
     registerSuccess: '恭喜你，您的账号 {username} 注册成功！',
     code: '验证码',
     switchLoginPage: '使用已有账户登录',
@@ -46,7 +47,7 @@ export default {
         length: '用户账号长度必须介于 {min} 和 {max} 之间'
       },
       password: {
-        required: '请输入您的密码',
+        required: '请输入密码',
         length: '用户密码长度必须介于 {min} 和 {max} 之间',
         pattern: '不能包含非法字符：{strings}'
       },
@@ -56,7 +57,21 @@ export default {
       confirmPassword: {
         required: '请再次输入您的密码',
         equalToPassword: '两次输入的密码不一致'
-      }
+      },
+        realName: {
+        required: '请输入真实姓名',
+        },
+        phonenumber: {
+        required: '请输入手机号码',
+        pattern: '请输入有效的手机号码'
+        },
+        idCard: {
+        required: '请输入身份证号码',
+        pattern: '请输入有效的身份证号码格式'
+        },
+        isAgree: {
+        required: '请阅读并同意协议'
+        }
     }
   },
   // 导航栏国际化

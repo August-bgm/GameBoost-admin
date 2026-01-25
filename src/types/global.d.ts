@@ -15,20 +15,6 @@ declare global {
     children?: Array<FieldOption>;
   }
 
-  /**
-   * 弹窗属性
-   */
-  declare interface DialogOption {
-    /**
-     * 弹窗标题
-     */
-    title?: string;
-    /**
-     * 是否显示
-     */
-    visible: boolean;
-  }
-
   declare interface UploadOption {
     /** 设置上传的请求头部 */
     headers: { [key: string]: any };

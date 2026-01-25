@@ -50,16 +50,13 @@
             <el-button v-hasPermi="['novel:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['novel:edit']" type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()">修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button v-hasPermi="['novel:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList" />
         </el-row>
       </template>
 
-      <el-table v-loading="loading" border :data="novelList" @selection-change="handleSelectionChange">
+      <el-table border :data="novelList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="ID" align="center" prop="id" width="80" />
         <el-table-column label="封面" align="center" prop="url" width="100">
@@ -233,7 +230,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" :loading="submitLoading" @click="submitForm">确 定</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
@@ -261,8 +258,6 @@ const payTypeOptions = [
 // ==================== 响应式数据 ====================
 const novelList = ref<NovelVO[]>([]);
 const novelCategory = ref<string[]>([]);
-const loading = ref(true);
-const submitLoading = ref(false);
 const showSearch = ref(true);
 const ids = ref<Array<number | string>>([]);
 const single = ref(true);
@@ -277,7 +272,7 @@ const queryFormRef = ref<ElFormInstance>();
 const novelFormRef = ref<ElFormInstance>();
 
 // ==================== 对话框状态 ====================
-const dialog = reactive<DialogOption>({
+const dialog = reactive({
   visible: false,
   title: ''
 });
@@ -331,13 +326,11 @@ const { queryParams, form, rules } = toRefs(data);
 // ==================== 列表相关方法 ====================
 /** 查询小说列表 */
 const getList = async () => {
-  loading.value = true;
   try {
     const res = await listNovel(proxy?.addDateRange(queryParams.value, dateRange.value, 'beginTime', 'endTime'));
     novelList.value = res.data.records;
     total.value = res.data.total;
   } finally {
-    loading.value = false;
   }
 };
 
@@ -389,7 +382,6 @@ const handleUpdate = async (row?: NovelVO) => {
   const novelId = row?.id || ids.value[0];
 
   try {
-    loading.value = true;
     const { data: novelInfo } = await getNovelInfo(novelId as number);
     const characters = (novelInfo.characters || []).map((char: any) => ({
       name: char.name || '',
@@ -419,7 +411,6 @@ const handleUpdate = async (row?: NovelVO) => {
   } catch {
     proxy?.$modal.msgError('获取小说详情失败');
   } finally {
-    loading.value = false;
   }
 };
 
@@ -523,8 +514,6 @@ const buildFormData = (): FormData => {
 const submitForm = () => {
   novelFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return;
-
-    submitLoading.value = true;
     try {
       const formData = buildFormData();
       await (form.value.id ? updateNovel(formData) : addNovel(formData));
@@ -533,7 +522,6 @@ const submitForm = () => {
       dialog.visible = false;
       await getList();
     } finally {
-      submitLoading.value = false;
     }
   });
 };

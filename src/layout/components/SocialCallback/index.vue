@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="social-callback"></div>
+  <div class="social-callback"></div>
 </template>
 
 <script setup lang="ts">
@@ -9,7 +9,6 @@ import { LoginData } from '@/api/types';
 import { HttpStatus } from '@/enums/RespEnum';
 
 const route = useRoute();
-const loading = ref(true);
 
 /**
  * 接收Route传递的参数
@@ -45,7 +44,6 @@ const callbackByCode = async (data: LoginData) => {
   try {
     const res = await callback(data);
     await processResponse(res);
-    loading.value = false;
   } catch (error) {
     handleError(error);
   }
@@ -55,7 +53,6 @@ const loginByCode = async (data: LoginData) => {
   try {
     const res = await login(data);
     await processResponse(res);
-    loading.value = false;
   } catch (error) {
     handleError(error);
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="p-2">
-    <div class="mb-[10px]">
+    <div v-show="showSearch" class="mb-[10px]">
       <el-card shadow="hover">
         <el-form ref="queryFormRef" :model="queryParams" :inline="true">
           <el-form-item label="登录地址" prop="ipaddr">
@@ -17,22 +17,20 @@
       </el-card>
     </div>
     <el-card shadow="hover">
+        <template #header>
+        <el-row :gutter="10" class="mb8">
+          <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
+        </el-row>
+      </template>
       <el-table
-        v-loading="loading"
         border
         :data="onlineList.slice((queryParams.pageNum - 1) * queryParams.pageSize, queryParams.pageNum * queryParams.pageSize)"
-        style="width: 100%"
       >
-        <el-table-column label="序号" width="50" type="index" align="center">
-          <template #default="scope">
-            <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="会话编号" align="center" prop="tokenId" :show-overflow-tooltip="true" />
         <el-table-column label="登录名称" align="center" prop="userName" :show-overflow-tooltip="true" />
         <el-table-column label="客户端" align="center" prop="clientKey" :show-overflow-tooltip="true" />
         <el-table-column label="主机" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
-        <el-table-column label="登录时间" align="center" prop="loginTime" width="180">
+        <el-table-column label="登录时间" align="center" prop="loginTime">
           <template #default="scope">
             <span>{{ proxy.parseTime(scope.row.loginTime) }}</span>
           </template>
@@ -40,8 +38,7 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="强退" placement="top">
-              <el-button v-hasPermi="['monitor:online:forceLogout']" link type="primary" icon="Delete" @click="handleForceLogout(scope.row)">
-              </el-button>
+              <el-button link type="primary" icon="Delete" @click="handleForceLogout(scope.row)"/>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -52,15 +49,15 @@
   </div>
 </template>
 
-<script setup name="Online" lang="ts">
-import { forceLogout, list as initData } from '@/api/monitor/online';
+<script setup lang="ts">
+import { forceLogout, list} from '@/api/monitor/online';
 import { OnlineQuery, OnlineVO } from '@/api/monitor/online/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const onlineList = ref<OnlineVO[]>([]);
-const loading = ref(true);
 const total = ref(0);
+const showSearch=ref(true)
 
 const queryFormRef = ref<ElFormInstance>();
 
@@ -71,25 +68,19 @@ const queryParams = ref<OnlineQuery>({
   userName: ''
 });
 
-/** 查询登录日志列表 */
 const getList = async () => {
-  loading.value = true;
-  const res = await initData(queryParams.value);
+  const res = await list(queryParams.value);
   onlineList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
-/** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
 };
-/** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
 };
-/** 强退按钮操作 */
 const handleForceLogout = async (row: OnlineVO) => {
     try{
         await proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?');

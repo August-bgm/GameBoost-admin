@@ -1,10 +1,10 @@
 <template>
-  <div v-loading="state.loading" class="layout-navbars-breadcrumb-user-news">
+  <div class="layout-navbars-breadcrumb-user-news">
     <div class="head-box">
       <div class="head-box-title">通知公告</div>
       <div class="head-box-btn" @click="readAll">全部已读</div>
     </div>
-    <div v-loading="state.loading" class="content-box">
+    <div class="content-box">
       <template v-if="newsList.length > 0">
         <div v-for="(v, k) in newsList" :key="k" class="content-box-item" @click="onNewsClick(k)">
           <div class="item-conten">
@@ -27,21 +27,10 @@ import { useNoticeStore } from '@/store/modules/notice';
 
 const noticeStore = useNoticeStore();
 const { readAll } = useNoticeStore();
-
-// 定义变量内容
-const state = reactive({
-  loading: false
-});
 const newsList = ref([]) as any;
 
-/**
- * 初始化数据
- * @returns
- */
 const getTableData = async () => {
-  state.loading = true;
   newsList.value = noticeStore.state.notices;
-  state.loading = false;
 };
 
 //点击消息，写入已读

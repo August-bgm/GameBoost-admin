@@ -1,4 +1,3 @@
-import { RoleVO } from '@/api/system/role/types';
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { UserForm, UserQuery, UserVO, UserInfoVO } from './types';
@@ -11,6 +10,13 @@ import { parseStrEmpty } from '@/utils/ruoyi';
 export const listUser = (query: UserQuery): AxiosPromise<UserVO[]> => {
   return request({
     url: '/system/user/list',
+    method: 'get',
+    params: query
+  });
+};
+export const listPlayers = (query: UserQuery): AxiosPromise<UserVO[]> => {
+  return request({
+    url: '/system/user/listPlayers',
     method: 'get',
     params: query
   });
@@ -135,6 +141,31 @@ export const uploadAvatar = (data: FormData) => {
   });
 };
 
+export const updateCredit = (userId: string | number, bizType: string, changes: string | number) => {
+  const data = {
+    userId,
+    bizType,
+    changes
+  };
+  return request({
+    url: '/bizLog/updateCredit',
+    method: 'post',
+    data: data
+  });
+};
+export const updateDeposit = (userId: string | number, bizType: string, changes: string | number) => {
+  const data = {
+    userId,
+    bizType,
+    changes
+  };
+  return request({
+    url: '/bizLog/updateDeposit',
+    method: 'post',
+    data: data
+  });
+};
+
 export default {
   listUser,
   getUser,
@@ -146,4 +177,7 @@ export default {
   updateUserProfile,
   updateUserPwd,
   uploadAvatar,
+  updateCredit,
+  updateDeposit,
+  listPlayers
 };

@@ -52,7 +52,6 @@
 
       <el-table
         ref="loginInfoTableRef"
-        v-loading="loading"
         :data="loginInfoList"
         :default-sort="defaultSort"
         border
@@ -97,7 +96,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { status_oper } = toRefs<any>(proxy?.useDict('status_oper'));
 
 const loginInfoList = ref<LoginInfoVO[]>([]);
-const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<number | string>>([]);
 const single = ref(true);
@@ -122,11 +120,9 @@ const queryParams = ref<LoginInfoQuery>({
 
 /** 查询登录日志列表 */
 const getList = async () => {
-  loading.value = true;
   const res = await list(proxy?.addDateRange(queryParams.value, dateRange.value));
   loginInfoList.value = res.data.records;
   total.value = res.data.total;
-  loading.value = false;
 };
 /** 搜索按钮操作 */
 const handleQuery = () => {
