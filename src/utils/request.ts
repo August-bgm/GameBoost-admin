@@ -103,7 +103,6 @@ service.interceptors.response.use(
       return res.data;
     }
     if (code === HttpStatus.UNAUTHORIZED) {
-      // prettier-ignore
       if (!isRelogin.show) {
         isRelogin.show = true;
         ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
@@ -151,7 +150,6 @@ service.interceptors.response.use(
 // 通用下载方法
 export function download(url: string, params: any, fileName: string) {
   downloadLoadingInstance = ElLoading.service({ text: '正在下载数据，请稍候', background: 'rgba(0, 0, 0, 0.7)' });
-  // prettier-ignore
   return service.post(url, params, {
       transformRequest: [
         (params: any) => {
